@@ -8,15 +8,9 @@
   <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node">
     <rosparam command="load" file="$(find jackal_gps_nav)/config/gps_robot_localization.yaml" />
     <remap from="/gps/fix" to="navsat/fix" />
+    <remap from="/odometry/filtered" to="/odometry/gps/"/>
   </node>
 
 
-<!--
-
-
-</node>
--->
-
-  <include file="$(find jackal_navigation)/launch/include/gmapping.launch" />
 
 </launch>
