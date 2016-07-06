@@ -28,7 +28,10 @@ RobotLocalization::NavsatConversions::LLtoUTM(latitude_goal, longitude_goal, utm
 ROS_INFO("UTM Cord is %f, %f", utm_x, utm_y);
 
 //TO DO - transform UTM to map
-//void tf::TransformListener::lookupTransform (const std::string &utm, const std::string &map, const ros::Time &time, StampedTransform &transform) const
+//tf::TransformListener listener;
+//try{
+//      listener.lookupTransform("/utm", "/map", ros::Time(0), transform);
+//    }
 
 
 
