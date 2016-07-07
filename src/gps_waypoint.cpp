@@ -2,6 +2,8 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <robot_localization/navsat_conversions.h>
+#include <geometry_msgs/PointStamped.h>
+#include <tf/transform_listener.h>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -27,20 +29,27 @@ std::string utm_zone;
 RobotLocalization::NavsatConversions::LLtoUTM(latitude_goal, longitude_goal, utm_y, utm_x, utm_zone);
 ROS_INFO("UTM Cord is %f, %f", utm_x, utm_y);
 
+geometry_msgs::PointStamped UTM_point;
+geometry_msgs::PointStamped map_point;
+UTM_point.header.frame_id = "utm" ;
+UTM_point.header.stamp = ros::Time::now() ;
+UTM_point.point.x = utm_x;
+UTM_point.point.y = utm_y;
+UTM_point.point.z = 0;
+
+
 //TO DO - transform UTM to map
-//tf::TransformListener listener;
-//try{
-//      listener.lookupTransform("/utm", "/map", ros::Time(0), transform);
-//    }
-
-
+tf::TransformListener listener;
+listener.waitForTransform("map", "utm", ros::Time::now(), ros::Duration(0.1));
+listener.transformPoint ("map", UTM_point, map_point);
 
 goal.target_pose.header.frame_id = "map";
 goal.target_pose.header.stamp = ros::Time::now();
 
 //Send goal to move_base
-goal.target_pose.pose.position.x = latitude_goal;
-goal.target_pose.pose.position.y = longitude_goal;
+ROS_INFO("Goal in map frame is  %f, %f", map_point.point.x,map_point.point.y);
+goal.target_pose.pose.position.x = map_point.point.x;
+goal.target_pose.pose.position.y = map_point.point.y;
 goal.target_pose.pose.orientation.w = 1.0;
 ROS_INFO("Sending goal");
 ac.sendGoal(goal);
