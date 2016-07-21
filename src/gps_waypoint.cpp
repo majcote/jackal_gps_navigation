@@ -15,6 +15,8 @@ double latitude_goal, longitude_goal;
 
 move_base_msgs::MoveBaseGoal goal;
 
+tf::TransformListener listener;
+
 //Get Longitude and Latitude goals from the parameter server
 ros::param::get("latitude_goal", latitude_goal);
 ros::param::get("longitude_goal", longitude_goal);
@@ -38,10 +40,25 @@ UTM_point.point.y = utm_y;
 UTM_point.point.z = 0;
 
 
-//TO DO - transform UTM to map
-tf::TransformListener listener;
-listener.waitForTransform("map", "utm", ros::Time::now(), ros::Duration(0.1));
-listener.transformPoint ("map", UTM_point, map_point);
+//Transform UTM to map frame
+bool notDone = true;
+
+while(notDone)
+{
+  try
+  {
+      listener.waitForTransform("map", "utm", ros::Time::now(), ros::Duration(0.1));
+      listener.transformPoint ("map", UTM_point, map_point);
+      notDone = false;
+    }
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("%s",ex.what());
+    //  return;
+    }
+}
+
+
 
 goal.target_pose.header.frame_id = "map";
 goal.target_pose.header.stamp = ros::Time::now();
