@@ -40,15 +40,15 @@ UTM_point.point.y = utm_y;
 UTM_point.point.z = 0;
 
 
-//Transform UTM to map frame
+//Transform UTM to odom frame
 bool notDone = true;
 
 while(notDone)
 {
   try
   {
-      listener.waitForTransform("map", "utm", ros::Time::now(), ros::Duration(0.1));
-      listener.transformPoint ("map", UTM_point, map_point);
+      listener.waitForTransform("odom", "utm", ros::Time::now(), ros::Duration(0.1));
+      listener.transformPoint ("odom", UTM_point, map_point);
       notDone = false;
     }
     catch (tf::TransformException ex)
@@ -60,7 +60,7 @@ while(notDone)
 
 
 
-goal.target_pose.header.frame_id = "map";
+goal.target_pose.header.frame_id = "odom";
 goal.target_pose.header.stamp = ros::Time::now();
 
 //Send goal to move_base
