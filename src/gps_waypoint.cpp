@@ -47,6 +47,7 @@ while(notDone)
 {
   try
   {
+      UTM_point.header.stamp = ros::Time::now() ;
       listener.waitForTransform("odom", "utm", ros::Time::now(), ros::Duration(0.1));
       listener.transformPoint ("odom", UTM_point, map_point);
       notDone = false;
